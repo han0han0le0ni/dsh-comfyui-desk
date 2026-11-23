@@ -50,7 +50,21 @@
 
 ## 安装
 
-### 方式 A：用 DSH 插件管理器从本地目录安装
+### 方式 A：从 npm 安装（推荐）
+
+```bash
+dsh plugin add dsh-comfyui-desk
+```
+
+DSH 桌面版使用 `desktop` profile，等价写法：
+
+```bash
+dsh plugin --profile desktop add dsh-comfyui-desk
+```
+
+装完后**完全退出 DSH（托盘图标右键退出）再重新打开**，否则客户端入口不会注册。
+
+### 方式 B：用 DSH 插件管理器从本地目录安装
 在 DSH 里打开「插件」→ 从本地目录安装，选择本仓库目录。
 
 命令行等价写法（DSH 桌面版运行的是 `desktop` profile，`dsh` 换成你的 DSH CLI 路径）：
@@ -61,7 +75,7 @@ dsh plugin --profile desktop add "link:<本仓库绝对路径>"
 
 装完后**完全退出 DSH（托盘图标右键退出）再重新打开**，否则客户端入口不会注册。
 
-### 方式 B：手工挂到现有 profile
+### 方式 C：手工挂到现有 profile
 1. 把本目录链接/复制到 profile 的 `node_modules/dsh-comfyui-desk`
 2. 在该 profile 的 `cordis.patch.yml` 末尾追加：
 
