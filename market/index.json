@@ -1,0 +1,89 @@
+{
+  "format": 1,
+  "title": {
+    "en": "dsh-comfyui-desk",
+    "zh": "dsh-comfyui-desk（ComfyUI 工作台）"
+  },
+  "description": {
+    "en": "A local ComfyUI workbench inside the DSH sidebar: GPU/CPU and queue status, generation progress, a local image library, prompt and parameter editing, AI-written prompts, a workflow canvas with optional two-way sync, and nine agent tools.",
+    "zh": "装在 DSH 侧边栏里的本机 ComfyUI 工作台：GPU/CPU 与队列状态、生成进度、本地图片库、提示词与参数编辑、AI 写提示词、可双向同步的工作流画布，以及 9 个 Agent 工具。"
+  },
+  "metadata": {
+    "categories": {
+      "tools": {
+        "title": {
+          "en": "Tools",
+          "zh": "工具"
+        }
+      }
+    },
+    "labels": {
+      "comfyui": {
+        "title": {
+          "en": "ComfyUI",
+          "zh": "ComfyUI"
+        }
+      },
+      "image-generation": {
+        "title": {
+          "en": "Image generation",
+          "zh": "图像生成"
+        }
+      },
+      "workflow": {
+        "title": {
+          "en": "Workflow canvas",
+          "zh": "工作流画布"
+        }
+      }
+    },
+    "sortKeys": {}
+  },
+  "plugins": [
+    {
+      "name": "dsh-comfyui-desk",
+      "title": {
+        "en": "ComfyUI Workbench",
+        "zh": "ComfyUI 工作台"
+      },
+      "description": {
+        "en": "Local ComfyUI workbench in the DSH sidebar: system and queue status, generation progress, local image library, prompt and parameter editing, AI-written prompts, workflow auto-detection, a node canvas with optional two-way sync via a ComfyUI bridge extension, and nine agent tools including draw-in-conversation.",
+        "zh": "DSH 侧边栏里的本机 ComfyUI 工作台：系统与队列状态、生成进度、本地图片库、提示词与参数编辑、AI 写提示词、工作流自动识别、节点画布（可选经 ComfyUI 桥接扩展双向同步），以及含对话内出图的 9 个 Agent 工具。"
+      },
+      "author": "han0han0le0ni",
+      "homepage": "https://github.com/han0han0le0ni/dsh-comfyui-desk#readme",
+      "repository": {
+        "url": "https://github.com/han0han0le0ni/dsh-comfyui-desk"
+      },
+      "metadata": {
+        "category": "tools",
+        "keywords": [
+          "dsh",
+          "dsh-plugin",
+          "deepseek-harness",
+          "comfyui",
+          "image-generation",
+          "workflow",
+          "cordis"
+        ],
+        "labels": [
+          "comfyui",
+          "image-generation",
+          "workflow"
+        ],
+        "sortKeys": {}
+      },
+      "versions": [
+        {
+          "version": "0.1.0",
+          "publishTimestamp": 1795443572,
+          "source": {
+            "type": "git",
+            "url": "https://github.com/han0han0le0ni/dsh-comfyui-desk.git",
+            "commit": "b5e68a0d8bc924703ae6fcceeb1cbead55b19e8d"
+          }
+        }
+      ]
+    }
+  ]
+}
