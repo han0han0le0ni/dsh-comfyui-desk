@@ -28,7 +28,7 @@
 
 ### AI 自选工作流（不需要你指定）
 
-**不需要说工具名，也不需要说工作流名**：只要在对话里表达"想看到一张图"，AI 就会自动调用 `comfy_desk_draw`，并**自己从本机已保存的 23 个工作流里挑一个最合适的**：
+**不需要说工具名，也不需要说工作流名**：只要在对话里表达"想看到一张图"，AI 就会自动调用 `comfy_desk_draw`，并**自己从本机已保存的工作流里挑一个最合适的**：
 
 - 按画面描述识别用途：普通出图 → 文生图；提到视频/放大/局部重绘/图生图/动作 → 对应工作流
 - 中文描述优先选带「中文」的工作流（如 `SDXL_Illustrious_中文文生图`），英文描述选对应的非中文版本
@@ -43,20 +43,20 @@
 
 ## 环境要求
 
-- DSH >= 0.2.2-rc.1（本机已验证 CLI 版本 `0.2.2-rc.5`）
-- Node.js >= 20（本机 `22.22.2`）
-- ComfyUI 监听 `127.0.0.1:8188`（本机 `0.46.0`）
+- DSH >= 0.2.2-rc.1（已在 `0.2.2-rc.5` 验证）
+- Node.js >= 20（已在 `22.22.2` 验证）
+- ComfyUI 监听 `127.0.0.1:8188`（已在 `0.46.0` 验证）
 - 不依赖 npm 第三方包；Host 只用 Node 内置模块，Client 只用 `react`
 
 ## 安装
 
-### 方式 A：用 DSH 插件管理器从本地目录安装（本机已装到 desktop profile）
-在 DSH 里打开「插件」→ 从本地目录安装，选择本目录 `E:\dsh-comfyUI`。
+### 方式 A：用 DSH 插件管理器从本地目录安装
+在 DSH 里打开「插件」→ 从本地目录安装，选择本仓库目录。
 
-命令行等价写法（DSH 桌面版运行的是 `desktop` profile）：
+命令行等价写法（DSH 桌面版运行的是 `desktop` profile，`dsh` 换成你的 DSH CLI 路径）：
 
 ```powershell
-& 'E:\DSH-App\resources\runtime\cli\bin\dsh.cmd' plugin --profile desktop add "link:E:/dsh-comfyUI"
+dsh plugin --profile desktop add "link:<本仓库绝对路径>"
 ```
 
 装完后**完全退出 DSH（托盘图标右键退出）再重新打开**，否则客户端入口不会注册。
@@ -123,9 +123,9 @@ http://127.0.0.1:8787/api/dsh-comfyui-desk/history?limit=10
 - AI 写提示词需要 DSH 会话提供可用的 `llm` 服务；模型从 DSH 模型库选，默认沿用当前会话模型。若模型库为空，先在 DSH 设置里配置 provider。
 - DSH 处于 developer preview，升级 DSH 后建议重新跑一次自检。
 
-## 本机验证记录（2026-11-23）
+## 验证记录（2026-11-23）
 
-- `node tools/smoke.mjs`：全部通过（46 条路由、19 个客户端请求路径、9 个 Agent 工具，含写回/版本号回归）；本机 ComfyUI 0.46.0 在线
+- `node tools/smoke.mjs`：全部通过（48 条路由、23 个客户端请求路径、9 个 Agent 工具，含写回/版本号回归）；本机 ComfyUI 0.46.0 在线
 - 双向同步：`/workflow-revision` 与 `/workflow-file` 实测返回磁盘版本号与原始画布文档；`applyCanvasEdit` + `writeWorkflow` 实测坐标/控件写盘且版本号变化；桥接扩展 Python 语法编译通过
 - `GET /status`：读到 RTX 5060 Laptop GPU、显存、内存、队列；CPU 使用率由两次采样差值算出，GPU 利用率由 `nvidia-smi` 读取（实测 5%），不可用时前端自动退回显示显存/内存占用进度条
 - `GET /models`：读到 4 个 checkpoint 与全部采样器
