@@ -1,6 +1,6 @@
 # dsh-comfyui-desk
 
-一个 DeepSeek Harness (DSH) 插件：在 DSH 左侧栏的「ComfyUI 工作台」面板里直接操作**本机 ComfyUI**。
+一个 DeepSeek Harness (DSH) 插件：在 DSH 右侧栏的「ComfyUI 工作台」面板里直接操作**本机 ComfyUI**。
 
 > 参考了 GitHub 上已成熟的 `dsh-comfyui-studio`、`dsh-comfy`、`dsh-comfyui-link` 的插件结构（Host 注册 HTTP 路由 + Client 注册侧边栏 tab + Agent 工具），但本实现为零第三方依赖的精简版。
 
@@ -50,30 +50,23 @@
 
 ## 安装
 
+装完都要**完全退出 DSH（托盘图标右键退出）再重新打开**，否则客户端入口不会注册。重开后到**右侧栏**的面板页签里找「ComfyUI 工作台」。
+
 ### 方式 A：从 npm 安装（推荐）
-
-```bash
-dsh plugin add dsh-comfyui-desk
-```
-
-DSH 桌面版使用 `desktop` profile，等价写法：
 
 ```bash
 dsh plugin --profile desktop add dsh-comfyui-desk
 ```
 
-装完后**完全退出 DSH（托盘图标右键退出）再重新打开**，否则客户端入口不会注册。
+`--profile` 填目标 profile，DSH 桌面版用的是 `desktop`；省略时走 CLI 默认 profile，不一定是桌面版那一份。
 
-### 方式 B：用 DSH 插件管理器从本地目录安装
-在 DSH 里打开「插件」→ 从本地目录安装，选择本仓库目录。
+### 方式 B：从本地目录安装（开发调试）
 
-命令行等价写法（DSH 桌面版运行的是 `desktop` profile，`dsh` 换成你的 DSH CLI 路径）：
+在 DSH 里打开「插件」→ 从本地目录安装，选择本仓库目录。命令行等价写法（`dsh` 换成你的 DSH CLI 路径）：
 
 ```powershell
 dsh plugin --profile desktop add "link:<本仓库绝对路径>"
 ```
-
-装完后**完全退出 DSH（托盘图标右键退出）再重新打开**，否则客户端入口不会注册。
 
 ### 方式 C：手工挂到现有 profile
 1. 把本目录链接/复制到 profile 的 `node_modules/dsh-comfyui-desk`
@@ -91,7 +84,7 @@ dsh plugin --profile desktop add "link:<本仓库绝对路径>"
         llmModel: ''
 ```
 
-3. **完全退出并重新打开 DSH**（托盘图标右键退出；只刷新页面不够）。在 DSH **左侧栏**的面板图标列表里找「ComfyUI 工作台」——不是右侧栏的 `+`，也不是 ComfyUI 自己的界面。
+3. **完全退出并重新打开 DSH**（托盘图标右键退出；只刷新页面不够），到**右侧栏**的面板页签里找「ComfyUI 工作台」。
 
 > 配置里的 `libraryDir` 是图库默认目录（留空用 `~/Pictures/DSH-ComfyUI`）；实际使用时更推荐在面板「图片库」页里指定，路径保存在浏览器本地并对当前面板立即生效。
 > AI 模型优先用面板「设置」里从 **DSH 模型库**选中的项；留空则自动沿用 DSH 当前会话模型（`agentDefaultModel`）。配置里的 `llmProvider` / `llmModel` 只作为兜底，一般不用填。模型库通过 Host 路由 `/llm-models` 读取 `llm.listProviders()` + `llm.listModels()`。
