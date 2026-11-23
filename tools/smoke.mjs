@@ -49,6 +49,24 @@ console.log('语法 OK: client.js')
   assert.ok(/selectedWorkflow: name/.test(source), '选择工作流必须写入 settings 持久化')
   assert.ok(/selectedWorkflow: '', \/\/ 上次选择的工作流名/.test(source), 'DEFAULT_SETTINGS 必须有 selectedWorkflow')
   assert.ok(/onWorkflowSelect\(remembered\)/.test(source), '重开面板必须自动恢复上次选择')
+  // 回归：切换工作流不能覆盖用户输入的提示词，种子必须保持随机。
+  const mergeMatch = source.match(/function mergeWorkflowParams\(prev, incoming\) \{([\s\S]*?)\n\}/)
+  assert.ok(mergeMatch, '必须定义 mergeWorkflowParams 保护生成页输入')
+  const mergeWorkflowParams = new Function('prev', 'incoming', mergeMatch[1])
+  const kept = mergeWorkflowParams(
+    { positive: '我的猫', negative: '低质量', seed: -1 },
+    { positive: 'workflow old prompt', negative: 'workflow old negative', seed: 12345, steps: 30 },
+  )
+  assert.equal(kept.positive, '我的猫', '换工作流不能覆盖用户已输入的正面提示词')
+  assert.equal(kept.negative, '低质量', '换工作流不能覆盖用户已输入的负面提示词')
+  assert.equal(kept.seed, -1, '换工作流不能把随机种子改成工作流保存的固定种子')
+  assert.equal(kept.steps, 30, '技术参数仍应由工作流回填')
+  const blank = mergeWorkflowParams({ positive: '', negative: '', seed: 42 }, { positive: 'workflow prompt', seed: 999 })
+  assert.equal(blank.positive, 'workflow prompt', '提示词为空时才回填工作流自带提示词')
+  assert.equal(blank.seed, 42, '用户明确固定的种子必须保留')
+  assert.ok(!/setParams\(\(prev\) => \(\{ \.\.\.prev, \.\.\.\(data\.params \?\? \{\}\) \}\)\)/.test(source), '工作流 params 不能直接整体覆盖')
+  assert.ok(/seed: -1, batch: 1/.test(source), '默认种子必须为 -1（随机）')
+  assert.ok(/onClick: \(\) => setParams\(\(prev\) => \(\{ \.\.\.prev, seed: -1 \}\)\)/.test(source), '必须提供一键恢复随机种子')
   // 图库：用户指定目录 + 删除 + 打开文件夹
   assert.ok(/libraryDir: '', \/\/ 图片库文件夹/.test(source), 'DEFAULT_SETTINGS 必须有 libraryDir')
   assert.ok(/call\('\/library-open'/.test(source), '必须调用 /library-open 打开文件夹')

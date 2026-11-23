@@ -32,6 +32,21 @@ const DEFAULT_PARAMS = {
   filenamePrefix: 'DSHDesk',
 }
 
+// 工作流自带 params 只能作为「未填写时的默认值」：
+// - 用户已经在生成页写过的正/负提示词，绝不能被工作流里的旧提示词覆盖；
+// - 种子默认随机（-1），工作流保存的固定种子不能悄悄把随机模式改掉。
+function mergeWorkflowParams(prev, incoming) {
+  if (!incoming || typeof incoming !== 'object') return prev
+  const merged = { ...prev, ...incoming }
+  for (const key of ['positive', 'negative']) {
+    if (String(prev[key] ?? '').trim() !== '') merged[key] = prev[key]
+  }
+  const seedText = String(prev.seed ?? '').trim()
+  const seedValue = Number(seedText)
+  merged.seed = seedText !== '' && Number.isFinite(seedValue) && seedValue >= 0 ? prev.seed : -1
+  return merged
+}
+
 function serviceOf(ctx, name) {
   if (ctx === null || ctx === undefined) return undefined
   try {
@@ -853,7 +868,7 @@ function ComfyDeskPanel() {
       })
       setWorkflowName(data.name ?? name)
       setSelectedNode('')
-      setParams((prev) => ({ ...prev, ...(data.params ?? {}) }))
+      setParams((prev) => mergeWorkflowParams(prev, data.params))
       setOverrides({})
       setSyncRevision(data.revision ?? '')
       setCanvasKey((data.name ?? name) + ':' + (data.revision ?? ''))
@@ -886,7 +901,7 @@ function ComfyDeskPanel() {
       })
       setSyncRevision(data.revision ?? '')
       setWorkflow((prev) => (prev ? { ...prev, prompt: data.prompt, mapping: data.mapping, revision: data.revision } : prev))
-      setParams((prev) => ({ ...prev, ...(data.params ?? {}) }))
+      setParams((prev) => mergeWorkflowParams(prev, data.params))
       if (data.push?.ok === false) setBridgeState({ installed: false, version: '' })
       setMsg(data.push?.ok === false
         ? '已写回工作流文件；ComfyUI 未装桥接，重启 ComfyUI 后可实时同步'
@@ -997,7 +1012,7 @@ function ComfyDeskPanel() {
         writeSettings(next)
         return next
       })
-      setParams((prev) => ({ ...prev, ...(data.params ?? {}) }))
+      setParams((prev) => mergeWorkflowParams(prev, data.params))
       setOverrides({})
       setTab('workflow')
       setMsg(`已载入 ${file.name}，共 ${data.mapping?.nodes?.length ?? 0} 个节点`)
@@ -1205,7 +1220,7 @@ function ComfyDeskPanel() {
           h('div', { className: 'ccd-hint' },
             workflowName
               ? `当前工作流：${workflowName}${params.checkpoint ? ' · 模型 ' + short(params.checkpoint, 28) : ''}`
-              : '选择工作流会自动载入它的提示词与参数；不选则用内置文生图模板。'),
+              : '切换工作流只更新模型、尺寸等参数；已输入的提示词与随机种子保持不变。'),
           h('div', { className: 'ccd-grid2' },
             h('div', { className: 'ccd-row' }, h('label', null, '宽'), h('input', { className: 'ccd-field', type: 'number', value: params.width, onChange: updateParam('width') })),
             h('div', { className: 'ccd-row' }, h('label', null, '高'), h('input', { className: 'ccd-field', type: 'number', value: params.height, onChange: updateParam('height') }))),
@@ -1213,7 +1228,16 @@ function ComfyDeskPanel() {
             h('div', { className: 'ccd-row' }, h('label', null, '步数'), h('input', { className: 'ccd-field', type: 'number', value: params.steps, onChange: updateParam('steps') })),
             h('div', { className: 'ccd-row' }, h('label', null, 'CFG'), h('input', { className: 'ccd-field', type: 'number', step: '0.1', value: params.cfg, onChange: updateParam('cfg') }))),
           h('div', { className: 'ccd-grid2' },
-            h('div', { className: 'ccd-row' }, h('label', null, '种子'), h('input', { className: 'ccd-field', type: 'number', value: params.seed, onChange: updateParam('seed') })),
+            h('div', { className: 'ccd-row' },
+              h('label', null, '种子'),
+              h('input', {
+                className: 'ccd-field', type: 'number', value: params.seed, placeholder: '-1 = 每次随机',
+                title: '-1 或留空表示每次生成随机', onChange: updateParam('seed'),
+              }),
+              h('button', {
+                className: 'ccd-btn', title: '恢复每次生成随机种子',
+                onClick: () => setParams((prev) => ({ ...prev, seed: -1 })),
+              }, '随机')),
             h('div', { className: 'ccd-row' }, h('label', null, '批次'), h('input', { className: 'ccd-field', type: 'number', value: params.batch, onChange: updateParam('batch') }))),
           h('div', { className: 'ccd-actions' },
             h('button', { className: 'ccd-btn primary', onClick: doGenerate, disabled: busy }, busy ? '提交中…' : '生成'),
