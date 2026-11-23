@@ -1,0 +1,14 @@
+# dsh-comfyui-desk bundle patch.
+# Host 入口注册 /api/dsh-comfyui-desk/* 路由与 ComfyUI 工具；
+# dsh.client 声明把浏览器侧入口挂到 DSH 右侧栏。
+- insert:
+    - id: dsh-comfyui-desk
+      name: dsh-comfyui-desk
+      config:
+        baseUrl: http://127.0.0.1:8188
+        requestTimeoutMs: 10000
+        libraryDir: ''
+        # 非标准安装位置可填工作流目录，例如 ['D:/ComfyUI/user/default/workflows']；留空自动推导
+        workflowDirs: []
+        llmProvider: ''
+        llmModel: ''

@@ -1,0 +1,19 @@
+# 参考仓库与临时文件（用户选择排除）
+_refs/
+_wf.json
+_wf1.json
+
+# WorkBuddy 项目数据（本机状态，非插件源码）
+.workbuddy/
+
+# 运行时产物
+node_modules/
+*.log
+*.tmp
+.dsh-*.tmp
+__pycache__/
+*.pyc
+
+# 系统文件
+.DS_Store
+Thumbs.db

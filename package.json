@@ -1,0 +1,47 @@
+{
+  "name": "dsh-comfyui-desk",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "DSH 侧边栏里的本地 ComfyUI 工作台：系统监控、生成进度、图片库、参数/提示词编辑、AI 提示词和工作流节点映射。",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "comfyui",
+    "cordis"
+  ],
+  "license": "MIT",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js"
+  },
+  "files": [
+    "index.js",
+    "lib",
+    "client.js",
+    "client.body.js",
+    "cordis.patch.yml",
+    "comfyui-bridge",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": []
+    }
+  },
+  "scripts": {
+    "build": "node tools/build-client.mjs",
+    "check": "node tools/build-client.mjs --check && node tools/smoke.mjs",
+    "smoke": "node tools/smoke.mjs",
+    "dev": "node tools/dev-server.mjs"
+  }
+}
