@@ -120,7 +120,7 @@ http://127.0.0.1:8787/api/dsh-comfyui-desk/history?limit=10
 ## 安全
 
 - 所有 HTTP 路由都会先调用 DSH 的 `connection.requestRejection(req)` 做平台准入检查：没通过返回 401/403，不会绕过 DSH 的会话鉴权
-- 平台没有该服务（DSH < 0.2.3）时放行，因此 `engines.dsh` 要求 `>=0.2.3`
+- 平台没有该服务（DSH < 0.2.3）时放行，因此 `engines.dsh` 放宽到 `>=0.1.0`，老版本也能装能用；0.2.3 及以上会自动做准入检查
 - 桥接扩展只监听 ComfyUI 本地 WebSocket，只有 `/dsh_desk_bridge/status` 与 `/apply` 两个端点，不接受任意写盘指令
 - 仓库内没有硬编码密钥；LLM 凭据由 DSH 模型库提供
 
