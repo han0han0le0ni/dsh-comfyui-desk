@@ -1432,7 +1432,7 @@ window.__ModuleLoader__.load({
 		 */
 		function installChatImageDecorator() {
 		  if (typeof document === 'undefined' || typeof MutationObserver !== 'function') return () => {}
-		  const SLOT = '[data-slot="conversation.chat.node"]'
+		  const SLOT = '[data-slot^="conversation"]'
 		  const PATTERN = /\[comfy:\s*([^\]\n]{1,300})\]|!\[[^\]]*\]\((https?:\/\/[^\s)]+\/view\?[^\s)]+)\)/g
 		  const PROBE = /\[comfy:\s*[^\]\n]{1,300}\]|\/view\?/
 		  const proxyUrl = (type, subfolder, filename) => '/api/dsh-comfyui-desk/view?filename=' + encodeURIComponent(filename)
