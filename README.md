@@ -55,17 +55,17 @@
 ### 方式 A：从 npm 安装（推荐）
 
 ```bash
-dsh plugin --profile desktop add dsh-comfyui-desk
+dsh plugin --profile web add dsh-comfyui-desk
 ```
 
-`--profile` 填目标 profile，DSH 桌面版用的是 `desktop`；省略时走 CLI 默认 profile，不一定是桌面版那一份。
+`--profile` 填你**正在用的那个 profile 名**。DSH 桌面版常见的是 `web`（本机就是），部分安装是 `desktop`；可以先 `dsh plugin list` 或看 `harness/profiles/` 目录确认。省略 `--profile` 会走 CLI 默认 profile，可能不是你界面上正在看的那个。
 
 ### 方式 B：从本地目录安装（开发调试）
 
-在 DSH 里打开「插件」→ 从本地目录安装，选择本仓库目录。命令行等价写法（`dsh` 换成你的 DSH CLI 路径）：
+在 DSH 里打开「插件」→ 从本地目录安装，选择本仓库目录。命令行等价写法（`dsh` 换成你的 DSH CLI 路径，profile 名同上）：
 
 ```powershell
-dsh plugin --profile desktop add "link:<本仓库绝对路径>"
+dsh plugin --profile web add "link:<本仓库绝对路径>"
 ```
 
 ### 方式 C：手工挂到现有 profile
