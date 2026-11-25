@@ -405,6 +405,15 @@ console.log('工具函数 OK')
   const toolsSource = fs.readFileSync(path.join(ROOT, 'lib/tools.js'), 'utf8')
   assert.ok(/base \+ '\/view\?filename='/.test(toolsSource), 'draw 返回的图片链接必须是 ComfyUI 绝对地址（对话内可显示）')
   assert.ok(/batch: int\('一次画几张/.test(toolsSource), 'draw 必须支持一次画多张')
+  // 对话内直接出图：工具的 render 必须把附件引用渲染成图片块，而不是只给文件路径。
+  let drawDefinition = null
+  registerTools({ tools: { register: (definition) => { if (definition.name === 'comfy_desk_draw') drawDefinition = definition } }, get: () => null }, {})
+  const parts = drawDefinition.output.render({}, { text: 'ok', images: [{ attachmentId: 'att_1', mediaType: 'image/png' }] })
+  assert.equal(parts[0].type, 'text', '第一个块必须是文本')
+  assert.equal(parts[1].type, 'image', '附件引用必须渲染成图片块')
+  assert.equal(parts[1].attachment.attachmentId, 'att_1')
+  assert.ok(/ctx\.get\('attachments'\)/.test(toolsSource), 'draw 必须通过 attachments 服务把图片送回对话')
+  assert.ok(/saveImage\(/.test(toolsSource), '必须调用 attachments.saveImage 生成图片引用')
   // AI 自选工作流：未指定 workflowName 时自动按意图挑选，且工具描述要告知 AI 无需手动查列表。
   assert.ok(/async function resolveWorkflow\(/.test(toolsSource), '必须有自动挑选工作流的辅助函数')
   assert.ok(/function detectPurpose\(/.test(toolsSource), '必须能从画面描述识别用途（文生图/视频/放大等）')
