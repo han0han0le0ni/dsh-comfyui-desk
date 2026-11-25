@@ -81,6 +81,15 @@
       },
       "versions": [
         {
+          "version": "0.2.1",
+          "publishTimestamp": 1795619752,
+          "source": {
+            "type": "git",
+            "url": "https://github.com/han0han0le0ni/dsh-comfyui-desk.git",
+            "commit": "c825253c1cac5e614334eee24e0f86a051448373"
+          }
+        },
+        {
           "version": "0.2.0",
           "publishTimestamp": 1795618399,
           "source": {
