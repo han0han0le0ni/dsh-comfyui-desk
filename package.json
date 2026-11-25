@@ -1,6 +1,6 @@
 {
   "name": "dsh-comfyui-desk",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "type": "module",
   "description": "DSH 右侧栏里的本地 ComfyUI 工作台：系统监控、生成进度、图片库、参数/提示词编辑、AI 提示词和工作流节点映射。",
   "keywords": [

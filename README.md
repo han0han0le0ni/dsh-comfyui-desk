@@ -21,7 +21,9 @@
 - **设置**：ComfyUI 地址、AI 模型（DSH 模型库下拉，可选"跟随当前会话"）、画布同步开关与桥接检测；可点"刷新模型库"重新拉取，设置保存在浏览器本地
 
 ### DSH Agent 工具
-`comfy_desk_status`、`comfy_desk_generate`、`comfy_desk_draw`、`comfy_desk_progress`、`comfy_desk_history`、`comfy_desk_images`、`comfy_desk_prompt`、`comfy_desk_workflows`、`comfy_desk_workflow_map`。
+`comfy_desk_status`、`comfy_desk_generate`、`comfy_desk_draw`、`comfy_desk_progress`、`comfy_desk_history`、`comfy_desk_images`、`comfy_desk_show`、`comfy_desk_prompt`、`comfy_desk_workflows`、`comfy_desk_workflow_map`。
+
+`comfy_desk_show` 可以把本地图片库里的图片直接显示在对话里，**ComfyUI 没开也能用**；`/view` 代理在 ComfyUI 离线时也会回退到本地图片库同名文件。
 
 - `comfy_desk_generate`：只提交任务，返回 prompt_id
 - `comfy_desk_draw`：**在 DSH 对话里直接出图**——等待生成完成，把输出图登记成对话附件（模型也能看到图），并输出 `[comfy: …]` 标记；插件前端装饰器把它替换成同源图片，对话里直接显示大图，点击可全屏预览。支持一次画多张。例如：“画一只猫”、“给我画一张赛博朋克城市”、“画两只猫，一张 512×512”。
