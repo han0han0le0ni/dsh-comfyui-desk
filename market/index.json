@@ -50,6 +50,7 @@
         "en": "Local ComfyUI workbench in the DSH sidebar: system and queue status, generation progress, local image library, prompt and parameter editing, AI-written prompts, workflow auto-detection, a node canvas with optional two-way sync via a ComfyUI bridge extension, and nine agent tools including draw-in-conversation.",
         "zh": "DSH 侧边栏里的本机 ComfyUI 工作台：系统与队列状态、生成进度、本地图片库、提示词与参数编辑、AI 写提示词、工作流自动识别、节点画布（可选经 ComfyUI 桥接扩展双向同步），以及含对话内出图的 9 个 Agent 工具。"
       },
+      "icon": "icon.svg",
       "author": "han0han0le0ni",
       "homepage": "https://github.com/han0han0le0ni/dsh-comfyui-desk#readme",
       "repository": {
@@ -64,7 +65,12 @@
           "comfyui",
           "image-generation",
           "workflow",
-          "cordis"
+          "cordis",
+          "comfyui工作台",
+          "图像生成",
+          "工作流",
+          "本地出图",
+          "提示词"
         ],
         "labels": [
           "comfyui",
