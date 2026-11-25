@@ -117,6 +117,13 @@ http://127.0.0.1:8787/api/dsh-comfyui-desk/models
 http://127.0.0.1:8787/api/dsh-comfyui-desk/history?limit=10
 ```
 
+## 安全
+
+- 所有 HTTP 路由都会先调用 DSH 的 `connection.requestRejection(req)` 做平台准入检查：没通过返回 401/403，不会绕过 DSH 的会话鉴权
+- 平台没有该服务（DSH < 0.2.3）时放行，因此 `engines.dsh` 要求 `>=0.2.3`
+- 桥接扩展只监听 ComfyUI 本地 WebSocket，只有 `/dsh_desk_bridge/status` 与 `/apply` 两个端点，不接受任意写盘指令
+- 仓库内没有硬编码密钥；LLM 凭据由 DSH 模型库提供
+
 ## 已知限制
 
 - 本机 ComfyUI 0.46 的 `/userdata/workflows` 返回 403，插件改为直接扫描磁盘目录（默认从 ComfyUI 的 `--output-directory` 推导出 `user/default/workflows`），因此仍能自动列出工作流。若你的 ComfyUI 装在非标准位置，可在 `cordis.patch.yml` 的 `dsh-comfyui-desk` 配置里加 `workflowDirs: ['D:/path/to/workflows']`。

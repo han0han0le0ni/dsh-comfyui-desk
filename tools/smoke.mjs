@@ -161,6 +161,9 @@ assert.equal(new Set(routePaths).size, routePaths.length, 'Host 路由 path 不�
 assert.ok(routePaths.includes('/api/dsh-comfyui-desk/status'), '必须保留 /api 前缀路由')
 assert.ok(routePaths.includes('/dsh-comfyui-desk/status'), '必须注册无 /api 前缀的兼容路由')
 assert.ok(routePaths.includes('/api/dsh-comfyui-desk/llm-models'), '必须注册 DSH 模型库路由')
+const routesSource = fs.readFileSync(path.join(ROOT, 'lib/routes.js'), 'utf8')
+assert.ok(/requestRejection/.test(routesSource), '所有路由必须接入 DSH 准入检查（connection.requestRejection）')
+assert.ok(/withAdmission\(ctx, item\.handler\)/.test(routesSource), '返回前必须统一包一层准入检查')
 for (const suffix of ['workflow-apply', 'workflow-save', 'workflow-revision', 'bridge-status', 'library-open']) {
   assert.ok(routePaths.includes('/api/dsh-comfyui-desk/' + suffix), '缺少路由 ' + suffix)
 }
