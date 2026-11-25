@@ -1424,8 +1424,8 @@ function SidebarIcon(props) {
 function installChatImageDecorator() {
   if (typeof document === 'undefined' || typeof MutationObserver !== 'function') return () => {}
   const SLOT = '[data-slot^="conversation"]'
-  const PATTERN = /\[comfy:\s*([^\]\n]{1,300})\]|!\[[^\]]*\]\((https?:\/\/[^\s)]+\/view\?[^\s)]+)\)/g
-  const PROBE = /\[comfy:\s*[^\]\n]{1,300}\]|\/view\?/
+  const PATTERN = /!\[[^\]]*\]\(((?:(?:https?:\/\/)?[^\s)]+)?\/view\?[^\s)]+)\)|\[comfy:\s*([^\]\n]{1,300})\]/g
+  const PROBE = /!\[[^\]]*\]\([^)]*\/view\?|\[comfy:/
   const proxyUrl = (type, subfolder, filename) => '/api/dsh-comfyui-desk/view?filename=' + encodeURIComponent(filename)
     + '&subfolder=' + encodeURIComponent(subfolder) + '&type=' + encodeURIComponent(type)
   const fromMarker = (body) => {
@@ -1436,7 +1436,8 @@ function installChatImageDecorator() {
   }
   const fromMarkdown = (url) => {
     try {
-      const query = new URL(url).searchParams
+      const parsed = new URL(url, window.location.origin)
+      const query = parsed.searchParams
       const filename = query.get('filename')
       if (!filename) return ''
       return proxyUrl(query.get('type') || 'output', query.get('subfolder') || '', filename)
@@ -1480,7 +1481,7 @@ function installChatImageDecorator() {
     PATTERN.lastIndex = 0
     let match
     while ((match = PATTERN.exec(value)) !== null) {
-      const src = match[1] ? fromMarker(match[1]) : fromMarkdown(match[2])
+      const src = match[1] ? fromMarkdown(match[1]) : fromMarker(match[2])
       if (!src) continue
       found = true
       if (match.index > last) frag.appendChild(document.createTextNode(value.slice(last, match.index)))
@@ -1497,6 +1498,16 @@ function installChatImageDecorator() {
     if (root.nodeType !== 1) return
     if (root.tagName && /^(SCRIPT|STYLE|TEXTAREA|PRE|CODE)$/.test(root.tagName)) return
     if (!root.querySelectorAll) return
+    // 宿主自己把 markdown 图片渲染出来了（可能指向 127.0.0.1:8188）：改走同源代理并补上点击放大。
+    for (const img of root.querySelectorAll('img[src*="/view?"]')) {
+      if (img.getAttribute('data-comfy-img') === '1') continue
+      const fixed = fromMarkdown(img.src)
+      if (!fixed) continue
+      img.setAttribute('data-comfy-img', '1')
+      img.src = fixed
+      img.style.cssText = 'display:inline-block;max-width:min(100%,560px);max-height:520px;margin:6px 0;border-radius:8px;cursor:zoom-in;object-fit:contain;background:rgba(127,127,127,.08)'
+      img.addEventListener('click', (event) => { event.stopPropagation(); openPreview(fixed) }, true)
+    }
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
       acceptNode: (node) => (node.nodeValue && PROBE.test(node.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT),
     })
