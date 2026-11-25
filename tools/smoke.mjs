@@ -414,6 +414,8 @@ console.log('工具函数 OK')
   assert.equal(parts[1].attachment.attachmentId, 'att_1')
   assert.ok(/ctx\.get\('attachments'\)/.test(toolsSource), 'draw 必须通过 attachments 服务把图片送回对话')
   assert.ok(/saveImage\(/.test(toolsSource), '必须调用 attachments.saveImage 生成图片引用')
+  assert.ok(/images: refs/.test(toolsSource), 'draw 必须同时返回附件引用给对话')
+  assert.ok(/\/view\?filename=/.test(toolsSource), 'draw 必须同时给出 markdown 图片地址')
   // AI 自选工作流：未指定 workflowName 时自动按意图挑选，且工具描述要告知 AI 无需手动查列表。
   assert.ok(/async function resolveWorkflow\(/.test(toolsSource), '必须有自动挑选工作流的辅助函数')
   assert.ok(/function detectPurpose\(/.test(toolsSource), '必须能从画面描述识别用途（文生图/视频/放大等）')

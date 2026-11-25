@@ -24,7 +24,7 @@
 `comfy_desk_status`、`comfy_desk_generate`、`comfy_desk_draw`、`comfy_desk_progress`、`comfy_desk_history`、`comfy_desk_images`、`comfy_desk_prompt`、`comfy_desk_workflows`、`comfy_desk_workflow_map`。
 
 - `comfy_desk_generate`：只提交任务，返回 prompt_id
-- `comfy_desk_draw`：**在 DSH 对话里直接出图**——等待生成完成，把输出图登记成对话附件直接显示（模型也能看到这张图），而不是只返回文件夹路径；没有 attachments 服务时才退回 ComfyUI 绝对地址的 markdown 图片。支持一次画多张。例如：“画一只猫”、“给我画一张赛博朋克城市”、“画两只猫，一张 512×512”。
+- `comfy_desk_draw`：**在 DSH 对话里直接出图**——等待生成完成，把输出图登记成对话附件（模型也能看到这张图），同时输出 ComfyUI 绝对地址的 markdown 图片；DSH 能渲染外链图时对话里直接显示大图，否则附件卡可点开查看原图。支持一次画多张。例如：“画一只猫”、“给我画一张赛博朋克城市”、“画两只猫，一张 512×512”。
 
 ### AI 自选工作流（不需要你指定）
 
