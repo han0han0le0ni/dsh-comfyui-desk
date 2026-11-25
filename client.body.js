@@ -1416,6 +1416,108 @@ function SidebarIcon(props) {
   h('circle', { cx: 17.6, cy: 4.6, r: 2.4, fill: 'currentColor', opacity: active ? 1 : 0.6 }))
 }
 
+/* ---- 对话内图片装饰器 ----
+ * 宿主把工具结果里的图片渲染成附件卡；这里按消息正文的 [comfy: type|subfolder|filename]
+ * 标记换成同源 <img>（走本插件 /api/dsh-comfyui-desk/view 代理，避开 CSP），
+ * 思路与 dsh-meme 的 [表情: …] 一致。点击图片可全屏预览。
+ */
+function installChatImageDecorator() {
+  if (typeof document === 'undefined' || typeof MutationObserver !== 'function') return () => {}
+  const SLOT = '[data-slot="conversation.chat.node"]'
+  const PATTERN = /\[comfy:\s*([^\]\n]{1,300})\]|!\[[^\]]*\]\((https?:\/\/[^\s)]+\/view\?[^\s)]+)\)/g
+  const PROBE = /\[comfy:\s*[^\]\n]{1,300}\]|\/view\?/
+  const proxyUrl = (type, subfolder, filename) => '/api/dsh-comfyui-desk/view?filename=' + encodeURIComponent(filename)
+    + '&subfolder=' + encodeURIComponent(subfolder) + '&type=' + encodeURIComponent(type)
+  const fromMarker = (body) => {
+    const parts = String(body).split('|')
+    if (parts.length < 3) return ''
+    const filename = parts.slice(2).join('|').trim()
+    return filename ? proxyUrl(parts[0].trim() || 'output', parts[1].trim(), filename) : ''
+  }
+  const fromMarkdown = (url) => {
+    try {
+      const query = new URL(url).searchParams
+      const filename = query.get('filename')
+      if (!filename) return ''
+      return proxyUrl(query.get('type') || 'output', query.get('subfolder') || '', filename)
+    } catch { return '' }
+  }
+  let overlay = null
+  const closePreview = () => {
+    if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay)
+    overlay = null
+  }
+  const openPreview = (src) => {
+    closePreview()
+    overlay = document.createElement('div')
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:24px;cursor:zoom-out'
+    const big = document.createElement('img')
+    big.src = src
+    big.style.cssText = 'max-width:96vw;max-height:92vh;border-radius:10px;box-shadow:0 12px 48px rgba(0,0,0,.5)'
+    overlay.appendChild(big)
+    overlay.addEventListener('click', (event) => { event.stopPropagation(); closePreview() }, true)
+    document.body.appendChild(overlay)
+  }
+  const makeImage = (src) => {
+    const img = document.createElement('img')
+    img.src = src
+    img.loading = 'lazy'
+    img.alt = 'ComfyUI 生成图'
+    img.setAttribute('data-comfy-img', '1')
+    img.style.cssText = 'display:block;max-width:min(100%,560px);max-height:520px;margin:6px 0;border-radius:8px;cursor:zoom-in;object-fit:contain;background:rgba(127,127,127,.08)'
+    img.addEventListener('click', (event) => { event.stopPropagation(); openPreview(src) }, true)
+    return img
+  }
+  const decorate = (text) => {
+    const parent = text.parentElement
+    if (!parent || !parent.closest(SLOT)) return
+    if (parent.closest('pre,code,textarea,input,[contenteditable="true"]')) return
+    const value = text.nodeValue || ''
+    if (!value || value.length > 800 || !PROBE.test(value)) return
+    const frag = document.createDocumentFragment()
+    let last = 0
+    let found = false
+    PATTERN.lastIndex = 0
+    let match
+    while ((match = PATTERN.exec(value)) !== null) {
+      const src = match[1] ? fromMarker(match[1]) : fromMarkdown(match[2])
+      if (!src) continue
+      found = true
+      if (match.index > last) frag.appendChild(document.createTextNode(value.slice(last, match.index)))
+      frag.appendChild(makeImage(src))
+      last = match.index + match[0].length
+    }
+    if (!found) return
+    if (last < value.length) frag.appendChild(document.createTextNode(value.slice(last)))
+    text.replaceWith(frag)
+  }
+  const scan = (root) => {
+    if (!root) return
+    if (root.nodeType === 3) { decorate(root); return }
+    if (root.nodeType !== 1) return
+    if (root.tagName && /^(SCRIPT|STYLE|TEXTAREA|PRE|CODE)$/.test(root.tagName)) return
+    if (!root.querySelectorAll) return
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode: (node) => (node.nodeValue && PROBE.test(node.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT),
+    })
+    const pending = []
+    while (walker.nextNode()) pending.push(walker.currentNode)
+    for (const node of pending) decorate(node)
+  }
+  const observer = new MutationObserver((records) => {
+    for (const record of records) {
+      if (record.type === 'characterData') scan(record.target)
+      else for (const node of record.addedNodes) scan(node)
+    }
+  })
+  observer.observe(document.body, { childList: true, subtree: true, characterData: true })
+  scan(document.body)
+  return () => {
+    try { observer.disconnect() } catch { /* ignore */ }
+    closePreview()
+  }
+}
+
 module.exports = {
   name: PKG + '-client',
   inject: ['slots'],
@@ -1438,6 +1540,7 @@ module.exports = {
           label: () => 'ComfyUI 工作台',
         }, SidebarIcon)),
       ]
+      disposers.push(installChatImageDecorator())
       const effect = typeof ctx?.effect === 'function'
         ? (callback, label) => ctx.effect(callback, label)
         : (callback) => callback()
