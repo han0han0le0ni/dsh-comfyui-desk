@@ -4,6 +4,24 @@
 
 > 参考了 GitHub 上已成熟的 `dsh-comfyui-studio`、`dsh-comfy`、`dsh-comfyui-link` 的插件结构（Host 注册 HTTP 路由 + Client 注册侧边栏 tab + Agent 工具），但本实现为零第三方依赖的精简版。
 
+## 界面
+
+**生成：提示词、工作流与 GPU/CPU 实时占用**
+
+![截图](docs/screenshots/generate.jpg)
+
+**画布：9 节点 10 连线，改控件即回写**
+
+![截图](docs/screenshots/canvas.jpg)
+
+**我的工作流：节点参数直接编辑并写盘**
+
+![截图](docs/screenshots/workflow.jpg)
+
+**对话里出图：AI 自选工作流后自动回传**
+
+![截图](docs/screenshots/chat.jpg)
+
 ## 功能
 
 ### 侧边栏「ComfyUI 工作台」
